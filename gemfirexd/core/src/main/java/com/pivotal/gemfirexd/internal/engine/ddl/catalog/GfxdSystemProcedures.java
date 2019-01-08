@@ -2422,6 +2422,28 @@ public class GfxdSystemProcedures extends SystemProcedures {
     }
   }
 
+  public static void ACQUIRE_REGION_LOCK(String tableName, String lockName)
+      throws SQLException {
+    try {
+      PartitionedRegion.RegionLock lock = PartitionedRegion.getRegionLock
+          (lockName + tableName, GemFireCacheImpl.getExisting());
+      lock.lock();
+    } catch (Throwable t) {
+      throw TransactionResourceImpl.wrapInSQLException(t);
+    }
+  }
+
+  public static void RELEASE_REGION_LOCK(String tableName, String lockName)
+      throws SQLException {
+    try {
+      PartitionedRegion.RegionLock lock = PartitionedRegion.getRegionLock
+          (lockName + tableName, GemFireCacheImpl.getExisting());
+      lock.unlock();
+    } catch (Throwable t) {
+      throw TransactionResourceImpl.wrapInSQLException(t);
+    }
+  }
+
   public static void COMMIT_SNAPSHOT_TXID(String txId, String rolloverTable)
       throws SQLException {
     try {
