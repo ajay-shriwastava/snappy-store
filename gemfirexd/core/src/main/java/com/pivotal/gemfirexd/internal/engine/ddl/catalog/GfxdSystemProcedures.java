@@ -2445,23 +2445,29 @@ public class GfxdSystemProcedures extends SystemProcedures {
     }
   }
 
-  public static void ACQUIRE_REGION_LOCK(String tableName, String lockName)
+  public static void ACQUIRE_REGION_LOCK(String lockName)
       throws SQLException {
     try {
+      Misc.getGemFireCacheNoThrow().getLogger().info("SKSK ACQUIRING LOCK On object " + lockName);
       PartitionedRegion.RegionLock lock = PartitionedRegion.getRegionLock
-          (lockName + tableName, GemFireCacheImpl.getExisting());
+          (lockName, GemFireCacheImpl.getExisting());
       lock.lock();
+      Misc.getGemFireCacheNoThrow().getLogger().info("SKSK ACQUIRED LOCK On object " + lockName);
     } catch (Throwable t) {
       throw TransactionResourceImpl.wrapInSQLException(t);
     }
   }
 
-  public static void RELEASE_REGION_LOCK(String tableName, String lockName)
+  public static void RELEASE_REGION_LOCK(String lockName)
       throws SQLException {
     try {
+      Misc.getGemFireCacheNoThrow().getLogger().info("SKSK RELEASING LOCK On object " + lockName);
+
       PartitionedRegion.RegionLock lock = PartitionedRegion.getRegionLock
-          (lockName + tableName, GemFireCacheImpl.getExisting());
-      lock.unlock();
+          (lockName, GemFireCacheImpl.getExisting());
+      lock.unlock(true);
+      Misc.getGemFireCacheNoThrow().getLogger().info("SKSK RELEASED LOCK On object " + lockName);
+
     } catch (Throwable t) {
       throw TransactionResourceImpl.wrapInSQLException(t);
     }
